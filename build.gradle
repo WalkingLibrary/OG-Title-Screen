@@ -1,16 +1,145 @@
-plugins {
-    id 'java'
+/*Build Dependents for working jar*/
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+
+        maven {
+            name = 'SpongePowered'
+            url = 'http://repo.spongepowered.org/maven'
+        }
+        maven{
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath "gradle.plugin.com.zoltu.gradle.plugin:git-versioning:3.0.3"
+    }
 }
 
-group 'com.jumbodinosaurs'
-version '1'
 
-sourceCompatibility = 1.8
+
+allprojects {
+    repositories {
+
+        maven {
+            name = 'spongepowered-repo'
+            url = 'http://repo.spongepowered.org/maven/'
+        }
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+
+    }
+}
+
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: "com.zoltu.git-versioning"
+
+
+
+def versionInfo = ZoltuGitVersioning.versionInfo
+
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+group = "com.jumbodinosaurs"
+archivesBaseName = "mcdevlib"
+
+sourceCompatibility = 1.8
+
+
+minecraft {
+    version = "1.12.2-14.23.1.2555"
+    runDir = "run"
+
+
+    mappings = "snapshot_20171003"
 }
+
+
+dependencies {
+    compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
+    compile 'com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'
+    compile 'com.github.classgraph:classgraph:28b32ec'
+    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+            {
+                exclude module: "launchwrapper"
+            }
+
+}
+
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'))
+        include(dependency('com.github.classgraph:classgraph:28b32ec'))
+        include(dependency('org.spongepowered:mixin'))
+
+    }
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+    classifier = 'final'
+}
+
+
+build.dependsOn(shadowJar)
+
+
+jar {
+    manifest {
+        attributes(
+                "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
+                "TweakOrder": 0,
+                'FMLCorePluginContainsFMLMod': 'true',
+                'FMLCorePlugin': 'com.mixin.Core',
+                'ForceLoadAsMod': 'true',
+                'FMLAT': 'mcdevlib_at.cfg'
+        )
+    }
+}
+
+mixin
+        {
+            defaultObfuscationEnv notch
+            add sourceSets.main, "mixinsDev.json.refmap.json"
+        }
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+
+print "Build Version: ${versionInfo.major}.${versionInfo.minor}.${versionInfo.commitCount}\n"
