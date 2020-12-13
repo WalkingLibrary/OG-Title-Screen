@@ -58,7 +58,7 @@ repositories {
 }
 
 group = "com.jumbodinosaurs"
-archivesBaseName = "mcdevlib"
+archivesBaseName = "alphatitlescreen"
 
 sourceCompatibility = 1.8
 
@@ -74,7 +74,6 @@ minecraft {
 
 dependencies {
     compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
-    compile 'com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'
     compile 'com.github.classgraph:classgraph:28b32ec'
     compile("org.spongepowered:mixin:0.7.11-SNAPSHOT")
             {
@@ -93,7 +92,6 @@ reobf {
 
 shadowJar {
     dependencies {
-        include(dependency('com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'))
         include(dependency('com.github.classgraph:classgraph:28b32ec'))
         include(dependency('org.spongepowered:mixin'))
 
@@ -110,21 +108,11 @@ build.dependsOn(shadowJar)
 jar {
     manifest {
         attributes(
-                "tweakClass": 'org.spongepowered.asm.launch.MixinTweaker',
-                "TweakOrder": 0,
-                'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'com.mixin.Core',
-                'ForceLoadAsMod': 'true',
-                'FMLAT': 'mcdevlib_at.cfg'
+                'FMLAT': 'alphatitlescreen_at.cfg'
         )
     }
 }
 
-mixin
-        {
-            defaultObfuscationEnv notch
-            add sourceSets.main, "mixinsDev.json.refmap.json"
-        }
 
 processResources {
     inputs.property "version", project.version
