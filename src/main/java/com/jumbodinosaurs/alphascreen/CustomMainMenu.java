@@ -1,110 +1,205 @@
 package com.jumbodinosaurs.alphascreen;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 
 public class CustomMainMenu extends GuiMainMenu
 {
+    private LogoEffectRandomizer[][] logoEffects;
+    private String[] minecraftLogo = {" *   * * *   * *** *** *** *** *** ***",
+                                      " ** ** * **  * *   *   * * * * *    * ",
+                                      " * * * * * * * **  *   **  *** **   * ",
+                                      " *   * * *  ** *   *   * * * * *    * ",
+                                      " *   * * *   * *** *** * * * * *    * "};
+    
+    private ResourceLocation terrain = new ResourceLocation("menu", "terrain.png");
+    private ResourceLocation black = new ResourceLocation("menu", "black.png");
+    
+    public CustomMainMenu()
+    {
+        super();
+    }
+    
+    
     @Override
     public void updateScreen()
     {
+        if(logoEffects != null)
+        {
+            for(int i = 0; i < logoEffects.length; i++)
+            {
+                for(int j = 0; j < logoEffects[i].length; j++)
+                {
+                    logoEffects[i][j].updateBlockPos();
+                }
+            }
+        }
         super.updateScreen();
     }
     
+    
+    
+    
+   
+    
     public void superSkip(int mouseX, int mouseY, float partialTicks)
     {
-        for (int i = 0; i < this.buttonList.size(); ++i)
+        for(int i = 0; i < this.buttonList.size(); ++i)
         {
             this.buttonList.get(i).drawButton(this.mc, mouseX, mouseY, partialTicks);
         }
-    
-        for (int j = 0; j < this.labelList.size(); ++j)
+        
+        for(int j = 0; j < this.labelList.size(); ++j)
         {
             this.labelList.get(j).drawLabel(this.mc, mouseX, mouseY);
         }
     }
     
+   
+   
+    
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        this.panoramaTimer += partialTicks;
         drawDefaultBackground();
-        int i = 274;
-        int j = this.width / 2 - 137;
-        int k = 30;
-        this.mc.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     
-        if ((double)this.minceraftRoll < 1.0E-4D)
-        {
-            this.drawTexturedModalRect(j + 0, 30, 0, 0, 99, 44);
-            this.drawTexturedModalRect(j + 99, 30, 129, 0, 27, 44);
-            this.drawTexturedModalRect(j + 99 + 26, 30, 126, 0, 3, 44);
-            this.drawTexturedModalRect(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
-            this.drawTexturedModalRect(j + 155, 30, 0, 45, 155, 44);
-        }
-        else
-        {
-            this.drawTexturedModalRect(j + 0, 30, 0, 0, 155, 44);
-            this.drawTexturedModalRect(j + 155, 30, 0, 45, 155, 44);
-        }
     
-        this.mc.getTextureManager().bindTexture(field_194400_H);
-        drawModalRectWithCustomSizedTexture(j + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
-    
-        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRenderer, this.width, this.height, this.splashText);
-    
-        GlStateManager.pushMatrix();
-        GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
-        GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
-        float f = 1.8F - MathHelper.abs(MathHelper.sin((float)(Minecraft.getSystemTime() % 1000L) / 1000.0F * ((float)Math.PI * 2F)) * 0.1F);
-        f = f * 100.0F / (float)(this.fontRenderer.getStringWidth(this.splashText) + 32);
-        GlStateManager.scale(f, f, f);
-        this.drawCenteredString(this.fontRenderer, this.splashText, 0, -8, -256);
-        GlStateManager.popMatrix();
-        String s = "Minecraft 1.12.2";
-    
-        if (this.mc.isDemo())
-        {
-            s = s + " Demo";
-        }
-        else
-        {
-            s = s + ("release".equalsIgnoreCase(this.mc.getVersionType()) ? "" : "/" + this.mc.getVersionType());
-        }
-    
-        java.util.List<String> brandings = com.google.common.collect.Lists.reverse(net.minecraftforge.fml.common.FMLCommonHandler.instance().getBrandings(true));
-        for (int brdline = 0; brdline < brandings.size(); brdline++)
-        {
-            String brd = brandings.get(brdline);
-            if (!com.google.common.base.Strings.isNullOrEmpty(brd))
-            {
-                this.drawString(this.fontRenderer, brd, 2, this.height - ( 10 + brdline * (this.fontRenderer.FONT_HEIGHT + 1)), 16777215);
-            }
-        }
-    
-        this.drawString(this.fontRenderer, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, -1);
-    
-        if (mouseX > this.widthCopyrightRest && mouseX < this.widthCopyrightRest + this.widthCopyright && mouseY > this.height - 10 && mouseY < this.height && Mouse.isInsideWindow())
-        {
-            drawRect(this.widthCopyrightRest, this.height - 1, this.widthCopyrightRest + this.widthCopyright, this.height, -1);
-        }
-    
-        if (this.openGLWarning1 != null && !this.openGLWarning1.isEmpty())
-        {
-            drawRect(this.openGLWarningX1 - 2, this.openGLWarningY1 - 2, this.openGLWarningX2 + 2, this.openGLWarningY2 - 1, 1428160512);
-            this.drawString(this.fontRenderer, this.openGLWarning1, this.openGLWarningX1, this.openGLWarningY1, -1);
-            this.drawString(this.fontRenderer, this.openGLWarning2, (this.width - this.openGLWarning2Width) / 2, (this.buttonList.get(0)).y - 12, -1);
-        }
-    
+        drawLogo(partialTicks);
+      
+        OGMinecraftTessellator tessellator = OGMinecraftTessellator.instance;
+       
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        tessellator.setColorOpaque_I(0xffffff);
+        GL11.glPushMatrix();
+        GL11.glTranslatef(width / 2 + 90, 70F, 0.0F);
+        GL11.glRotatef(-20F, 0.0F, 0.0F, 1.0F);
+        float f1 = 1.8F -
+                   MathHelper.abs(MathHelper.sin(((float) (System.currentTimeMillis() % 1000L) / 1000F) *
+                                                 3.141593F *
+                                                 2.0F) * 0.1F);
+        f1 = (f1 * 100F) / (float) (fontRenderer.getStringWidth(splashText) + 32);
+        GL11.glScalef(f1, f1, f1);
+        drawCenteredString(fontRenderer, splashText, 0, -8, 0xffff00);
+        GL11.glPopMatrix();
+        drawString(fontRenderer, "Minecraft 1.12.2", 2, 2, 0x505050);
+        String s = "Copyright Mojang Specifications. Do not distribute.";
+        drawString(fontRenderer, s, width - fontRenderer.getStringWidth(s) - 2, height - 10, 0xffffff);
+        
+        GlStateManager.blendFunc(0,0);
         this.superSkip(mouseX, mouseY, partialTicks);
+        
+    }
     
-        if (this.areRealmsNotificationsEnabled())
+    private void drawLogo(float f)
+    {
+        if(logoEffects == null)
         {
-            this.realmsNotification.drawScreen(mouseX, mouseY, partialTicks);
+            logoEffects = new LogoEffectRandomizer[minecraftLogo[0].length()][minecraftLogo.length];
+            for(int i = 0; i < logoEffects.length; i++)
+            {
+                for(int j = 0; j < logoEffects[i].length; j++)
+                {
+                    logoEffects[i][j] = new LogoEffectRandomizer(this, i, j);
+                }
+                
+            }
+            
         }
+        GL11.glMatrixMode(5889 /*GL_PROJECTION*/);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        ScaledResolution scaledresolution = new ScaledResolution(mc);
+        int k = 120 * scaledresolution.getScaleFactor();
+        GLU.gluPerspective(70F, (float) mc.displayWidth / (float) k, 0.05F, 100F);
+        GL11.glViewport(0, mc.displayHeight - k, mc.displayWidth, k);
+        GL11.glMatrixMode(5888 /*GL_MODELVIEW0_ARB*/);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glDisable(2884 /*GL_CULL_FACE*/);
+        GL11.glCullFace(1029 /*GL_BACK*/);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        
+        OGMinecraftRenderBlocks renderblocks = new OGMinecraftRenderBlocks();
+        for(int l = 0; l < 3; l++)
+        {
+            GL11.glPushMatrix();
+            GL11.glTranslatef(0.4F, 0.6F, -13F);
+            if(l == 0)
+            {
+                GL11.glClear(256);
+                GL11.glTranslatef(0.0F, -0.4F, 0.0F);
+                GL11.glScalef(0.98F, 1.0F, 1.0F);
+                GL11.glEnable(3042 /*GL_BLEND*/);
+                GL11.glBlendFunc(770, 771);
+            }
+            if(l == 1)
+            {
+                GL11.glDisable(3042 /*GL_BLEND*/);
+                GL11.glClear(256);
+            }
+            if(l == 2)
+            {
+                GL11.glEnable(3042 /*GL_BLEND*/);
+                GL11.glBlendFunc(768, 1);
+            }
+            GL11.glScalef(-1.0F, 1F, -1.0F);
+            GL11.glRotatef(15F, 1.0F, 0.0F, 0.0F);
+            GL11.glScalef(-0.89F, -1.0F, -0.4F);
+            GL11.glTranslatef((float) (-minecraftLogo[0].length()) * 0.5F,
+                              (float) (-minecraftLogo.length) * 0.5F,
+                              0.0F);
+            
+            mc.getTextureManager().bindTexture(terrain);
+            if(l == 0)
+            {
+                mc.getTextureManager().bindTexture(black);
+            }
+            for(int i1 = 0; i1 < minecraftLogo.length; i1++)
+            {
+                for(int j1 = 0; j1 < minecraftLogo[i1].length(); j1++)
+                {
+                    char c = minecraftLogo[i1].charAt(j1);
+                    if(c == ' ')
+                    {
+                        continue;
+                    }
+                    GL11.glPushMatrix();
+                    LogoEffectRandomizer logoeffectrandomizer = logoEffects[j1][i1];
+                    float f1 = (float) (logoeffectrandomizer.lastPos +
+                                        (logoeffectrandomizer.currentPos - logoeffectrandomizer.lastPos) *
+                                        (double) f);
+                    float f2 = 1.0F;
+                    float f3 = 1.0F;
+                    float f4 = 0.0F;
+                    if(l == 0)
+                    {
+                        f2 = f1 * 0.04F + 1.0F;
+                        f3 = 1.0F / f2;
+                        f1 = 0.0F;
+                    }
+                    GL11.glTranslatef(j1, i1, f1);
+                    GL11.glScalef(f2, f2, f2);
+                    GL11.glRotatef(f4, 0.0F, 1.0F, 0.0F);
+                    renderblocks.renderBlock(new AlphaBLock(1), f3);
+                    GL11.glPopMatrix();
+                }
+                
+            }
+            
+            GL11.glPopMatrix();
+        }
+        
+        GL11.glDisable(3042 /*GL_BLEND*/);
+        GL11.glMatrixMode(5889 /*GL_PROJECTION*/);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(5888 /*GL_MODELVIEW0_ARB*/);
+        GL11.glPopMatrix();
+        GL11.glViewport(0, 0, mc.displayWidth, mc.displayHeight);
+        GL11.glEnable(2884 /*GL_CULL_FACE*/);
     }
 }
