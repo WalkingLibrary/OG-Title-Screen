@@ -1,0 +1,21 @@
+[
+  {
+    "modid": "alphatitlescreen",
+    "name": "Og Alpha Title Screen",
+    "description": "Addes The Original Alpha Title Screen",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/WalkingLibrary/OG-Title-Screen",
+    "updateUrl": "",
+    "authorList": [
+      "Notch",
+      "OG Mojang Dev Team",
+      "SEARGE",
+      "Walking_Library"
+    ],
+    "credits": "Thank You MCP and Notch for giving me the tools and game to make this",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
