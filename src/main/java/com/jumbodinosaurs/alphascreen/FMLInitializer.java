@@ -33,7 +33,7 @@ public class FMLInitializer
     @SubscribeEvent
     public void onMainScreenLoad(GuiScreenEvent guiScreenEvent)
     {
-        if(guiScreenEvent.getGui() instanceof GuiMainMenu && !(guiScreenEvent.getGui() instanceof CustomMainMenu))
+        if(guiScreenEvent.getGui().getClass().equals(GuiMainMenu.class))
         {
             Minecraft.getMinecraft().displayGuiScreen(new CustomMainMenu());
         }
