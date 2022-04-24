@@ -1,81 +1,147 @@
-/*Build Dependents for working jar*/
+/*Do build task For Working Jar - Use Final Jar*/
+
 buildscript {
     repositories {
-        jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-
+        gradlePluginPortal()
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
         maven {
             name = 'SpongePowered'
-            url = 'http://repo.spongepowered.org/maven'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
         }
-        maven{
+        maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.4-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.+'
+
+        //https://plugins.gradle.org/plugin/com.dmdirc.git-version
         classpath "gradle.plugin.com.zoltu.gradle.plugin:git-versioning:3.0.3"
+        //https://plugins.gradle.org/plugin/com.github.johnrengelman.plugin-shadow
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
     }
 }
 
 
-
-allprojects {
-    repositories {
-
-        maven {
-            name = 'spongepowered-repo'
-            url = 'http://repo.spongepowered.org/maven/'
-        }
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-
-    }
-}
-
-
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "com.zoltu.git-versioning"
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'maven'
-apply plugin: "com.zoltu.git-versioning"
+apply plugin: 'eclipse'
 
 
-
+group = "com.jumbodinosaurs"
+archivesBaseName = "alphatitlescreen"
 def versionInfo = ZoltuGitVersioning.versionInfo
+print "Build Version: ${versionInfo.major}.${versionInfo.minor}.${versionInfo.commitCount}\n"
+sourceSets.main.java.srcDir "src/main/Java"
+sourceSets.main.resources.srcDir "src/main/resources"
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
+
+//https://docs.gradle.org/1.8-rc-1/userguide/dependency_management.html#sec:controlling_caching
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 1, 'minutes'
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
+}
 
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    maven {
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+    maven {
+        name 'Tethys (drakon.io)'
+        url "https://tethys.drakon.io/maven"
+    }
 }
 
-group = "com.jumbodinosaurs"
-archivesBaseName = "alphatitlescreen"
-
-sourceCompatibility = 1.8
-
-
 minecraft {
-    version = "1.12.2-14.23.1.2555"
-    runDir = "run"
+    // The mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   Snapshot are built nightly.
+    // stable_#            Stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // Simply re-run your setup task after changing the mappings to update your workspace.
+    //mappings channel: 'snapshot', version: '20171003-1.12'
+    mappings channel: 'snapshot', version: '20171003-1.12'
+    // makeObfSourceJar = true // an Srg named sources jar is made by default. uncomment this to disable.
 
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/alphatitlescreen_at.cfg')
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
 
-    mappings = "snapshot_20171003"
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    maven {
+        name = 'spongepowered-repo'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
 }
 
 
 dependencies {
-    compile 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
-    compile 'com.github.classgraph:classgraph:28b32ec'
-    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
+    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
+    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+
+    // You may put jars on which you depend on in ./libs or you may define them like so..
+    // compile "some.group:artifact:version:classifier"
+    // compile "some.group:artifact:version"
+
+    // Real examples
+    // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
+    // compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
+
+    // The 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
+    // provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+
+    // These dependencies get remapped to your current MCP mappings
+    // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
+
+    // For more info...
+    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
+    // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    implementation 'com.github.WalkingLibrary:Java-Dev-Lib:-SNAPSHOT'
+    implementation 'com.github.classgraph:classgraph:28b32ec'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'org.spongepowered:spongeapi:8.0.0-SNAPSHOT'
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
+
+
+    implementation("org.spongepowered:mixin:0.8.5")
             {
                 exclude module: "launchwrapper"
             }
@@ -83,29 +149,8 @@ dependencies {
 }
 
 
-reobf {
-    shadowJar {
-        mappingType = 'SEARGE'
-        classpath = sourceSets.main.compileClasspath
-    }
-}
-
-shadowJar {
-    dependencies {
-        include(dependency('com.github.classgraph:classgraph:28b32ec'))
-        include(dependency('org.spongepowered:mixin'))
-
-    }
-    exclude 'dummyThing'
-    exclude 'LICENSE.txt'
-    classifier = 'final'
-}
-
-
-build.dependsOn(shadowJar)
-
-
 jar {
+    setDuplicatesStrategy(duplicatesStrategy.INCLUDE)
     manifest {
         attributes(
                 'FMLAT': 'alphatitlescreen_at.cfg'
@@ -115,19 +160,26 @@ jar {
 
 
 processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    setDuplicatesStrategy(duplicatesStrategy.INCLUDE)
+}
 
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        expand 'version': project.version, 'mcversion': project.minecraft.version
+shadowJar {
+    dependencies {
+        include(dependency('com.github.classgraph:classgraph:28b32ec'))
+        include(dependency('org.spongepowered:mixin'))
+        include(dependency('org.apache.logging.log4j:2.17.2'))
     }
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+    classifier = 'final'
+}
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+build.dependsOn(shadowJar)
+
+reobf {
+    shadowJar {
+    } // Reobfuscate the shadowed JAR
 }
 
 
-print "Build Version: ${versionInfo.major}.${versionInfo.minor}.${versionInfo.commitCount}\n"
+jar.finalizedBy('reobf')
