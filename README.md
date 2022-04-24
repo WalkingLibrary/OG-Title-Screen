@@ -1,6 +1,6 @@
 # Minecraft Alpha Title Screen
-![Forge Version](https://img.shields.io/badge/Forge-1.12.2-blue)
-![Gradle Version](https://img.shields.io/badge/Gradle-4.3.1-yellow)
+![Forge Version](https://img.shields.io/badge/Forge-Mod-blue)
+![Gradle Version](https://img.shields.io/badge/Gradle-7.4.2-yellow)
 
 
 ### About
