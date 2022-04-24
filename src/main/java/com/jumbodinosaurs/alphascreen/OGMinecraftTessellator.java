@@ -12,12 +12,12 @@ import java.nio.IntBuffer;
 public class OGMinecraftTessellator
 {
     public static final OGMinecraftTessellator instance = new OGMinecraftTessellator(0x200000);
-    private static boolean convertQuadsToTriangles = true;
-    private static boolean tryVBO = false;
-    private ByteBuffer byteBuffer;
-    private IntBuffer intBuffer;
-    private FloatBuffer floatBuffer;
-    private int[] rawBuffer;
+    private static final boolean convertQuadsToTriangles = true;
+    private static final boolean tryVBO = false;
+    private final ByteBuffer byteBuffer;
+    private final IntBuffer intBuffer;
+    private final FloatBuffer floatBuffer;
+    private final int[] rawBuffer;
     private int vertexCount;
     private double textureU;
     private double textureV;
@@ -37,9 +37,9 @@ public class OGMinecraftTessellator
     private boolean useVBO;
     private IntBuffer vertexBuffers;
     private int vboIndex;
-    private int vboCount;
-    private int bufferSize;
-    
+    private final int vboCount;
+    private final int bufferSize;
+
     private OGMinecraftTessellator(int i)
     {
         vertexCount = 0;
