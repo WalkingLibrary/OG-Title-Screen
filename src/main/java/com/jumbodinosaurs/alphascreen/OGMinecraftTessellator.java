@@ -5,6 +5,7 @@ import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -12,12 +13,12 @@ import java.nio.IntBuffer;
 public class OGMinecraftTessellator
 {
     public static final OGMinecraftTessellator instance = new OGMinecraftTessellator(0x200000);
-    private static final boolean convertQuadsToTriangles = true;
-    private static final boolean tryVBO = false;
-    private final ByteBuffer byteBuffer;
-    private final IntBuffer intBuffer;
-    private final FloatBuffer floatBuffer;
-    private final int[] rawBuffer;
+    private static boolean convertQuadsToTriangles = true;
+    private static boolean tryVBO = false;
+    private ByteBuffer byteBuffer;
+    private IntBuffer intBuffer;
+    private FloatBuffer floatBuffer;
+    private int[] rawBuffer;
     private int vertexCount;
     private double textureU;
     private double textureV;
@@ -37,8 +38,8 @@ public class OGMinecraftTessellator
     private boolean useVBO;
     private IntBuffer vertexBuffers;
     private int vboIndex;
-    private final int vboCount;
-    private final int bufferSize;
+    private int vboCount;
+    private int bufferSize;
 
     private OGMinecraftTessellator(int i)
     {
@@ -75,10 +76,10 @@ public class OGMinecraftTessellator
         isDrawing = false;
         if(vertexCount > 0)
         {
-            intBuffer.clear();
+            ((Buffer)intBuffer).clear();
             intBuffer.put(rawBuffer, 0, rawBufferIndex);
-            byteBuffer.position(0);
-            byteBuffer.limit(rawBufferIndex * 4);
+            ((Buffer)byteBuffer).position(0);
+            ((Buffer)byteBuffer).limit(rawBufferIndex * 4);
             if(useVBO)
             {
                 vboIndex = (vboIndex + 1) % vboCount;
@@ -92,7 +93,7 @@ public class OGMinecraftTessellator
                     GL11.glTexCoordPointer(2, 5126, 32, 12L);
                 } else
                 {
-                    floatBuffer.position(3);
+                    ((Buffer)floatBuffer).position(3);
                     GL11.glTexCoordPointer(2, 32, floatBuffer);
                 }
                 GL11.glEnableClientState(32888);
@@ -104,7 +105,7 @@ public class OGMinecraftTessellator
                     GL11.glColorPointer(4, 5121, 32, 20L);
                 } else
                 {
-                    byteBuffer.position(20);
+                    ((Buffer) byteBuffer).position(20);
                     GL11.glColorPointer(4, true, 32, byteBuffer);
                 }
                 GL11.glEnableClientState(32886);
@@ -116,7 +117,7 @@ public class OGMinecraftTessellator
                     GL11.glNormalPointer(5120, 32, 24L);
                 } else
                 {
-                    byteBuffer.position(24);
+                    ((Buffer)byteBuffer).position(24);
                     GL11.glNormalPointer(32, byteBuffer);
                 }
                 GL11.glEnableClientState(32885);
@@ -126,7 +127,7 @@ public class OGMinecraftTessellator
                 GL11.glVertexPointer(3, 5126, 32, 0L);
             } else
             {
-                floatBuffer.position(0);
+                ((Buffer)floatBuffer).position(0);
                 GL11.glVertexPointer(3, 32, floatBuffer);
             }
             GL11.glEnableClientState(32884);
@@ -157,7 +158,7 @@ public class OGMinecraftTessellator
     private void reset()
     {
         vertexCount = 0;
-        byteBuffer.clear();
+        ((Buffer)byteBuffer).clear();
         rawBufferIndex = 0;
         addedVertices = 0;
     }
