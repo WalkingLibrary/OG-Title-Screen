@@ -182,4 +182,4 @@ reobf {
 }
 
 
-jar.finalizedBy('reobf')
+jar.finalizedBy('reobfJar')
