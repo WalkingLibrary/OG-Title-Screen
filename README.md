@@ -19,13 +19,13 @@
 
 
 
-#Supported Minecraft Versions
+# Supported Minecraft Versions
 
 - 1.12.2
 
 
 
-#Java Version
+# Java Version
 
 ```bash
 admin@MyLinuxPC:~/Java/OG-Title-Screen/build/libs$ java --version
@@ -36,7 +36,7 @@ admin@MyLinuxPC:~/Java/OG-Title-Screen/build/libs$
 ```
 
 
-#How To Clone
+# How To Clone
 
 ```bash
 admin@MyLinuxPC:~/Java$ sudo git clone https://github.com/WalkingLibrary/OG-Title-Screen
@@ -54,7 +54,7 @@ admin@MyLinuxPC:~/Java/OG-Title-Screen$ sudo chmod 700 ./gradlew
 ```
 
 
-#How to Build
+# How to Build
 
 ```bash
 admin@MyLinuxPC:~/Java/OG-Title-Screen$ sudo ./gradlew build
@@ -80,7 +80,7 @@ admin@MyLinuxPC:~/Java/OG-Title-Screen/build/libs$
 
 
 
-#How to Use
+# How to Use
 
 ```bash
 
